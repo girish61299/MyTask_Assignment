@@ -1,117 +1,72 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
+  FlatList,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
+  NativeModules,
+  SafeAreaView
 } from 'react-native';
 
 import {
   Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import ResturentCard from './src/Screens/ResturentCard';
+import HScrollCard from './src/Screens/ScrollCard/HScrollCard';
+import ExpoleCard from './src/Screens/Exploer/ExpoleCard';
+import colors from './src/styles/colors';
+import HeaderView from './src/Screens/Header/HeaderView';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const { LiveActivityManager } = NativeModules;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
+const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: isDarkMode ? Colors.darker : colors.white,
   };
 
+  const renderItem = ({ item }) => {
+    switch (item.type) {
+      case 'header':
+        return <HeaderView />;
+      case 'restaurant':
+        return <ResturentCard />;
+      case 'scrollCard':
+        return <HScrollCard />;
+      case 'explore':
+        return <ExpoleCard />;
+      default:
+        return null;
+    }
+  };
+
+  const data = [
+    { id: '1', type: 'header' },
+    { id: '2', type: 'scrollCard' },
+    { id: '3', type: 'explore' },
+    { id: '4', type: 'restaurant' },
+  ];
+
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+        barStyle={'light-content'}
+        backgroundColor={'red'}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.listContainer}
+      />
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  listContainer: {
+    paddingBottom: 20,
   },
 });
 
